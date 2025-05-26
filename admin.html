@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración del Chatbot</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Administración del Chatbot</h1>
+        </header>
+
+        <section class="system-prompt-section">
+            <h2>Configuración del Sistema</h2>
+            <div id="promptAuth" class="auth-container">
+                <div class="form-group">
+                    <label for="adminPassword">Contraseña de Administrador:</label>
+                    <input type="password" id="adminPassword" placeholder="Ingrese la contraseña...">
+                    <button type="button" onclick="verifyPassword()">Verificar</button>
+                </div>
+            </div>
+            <div id="promptEditor" class="form-group" style="display: none;">
+                <label for="systemPrompt">Prompt del Sistema:</label>
+                <textarea id="systemPrompt" rows="10" placeholder="Ingrese el prompt del sistema..."></textarea>
+                <div class="formatting-tools">
+                    <button type="button" onclick="formatText('systemPrompt', 'bold')">Negrita</button>
+                    <button type="button" onclick="formatText('systemPrompt', 'italic')">Cursiva</button>
+                    <button type="button" onclick="formatText('systemPrompt', 'newline')">Salto de línea</button>
+                </div>
+                <div class="help-text">
+                    <p>Puedes usar:</p>
+                    <ul>
+                        <li>**texto** para negrita</li>
+                        <li>*texto* para cursiva</li>
+                        <li>Presiona Enter para saltos de línea</li>
+                    </ul>
+                </div>
+                <div class="button-group">
+                    <button type="button" onclick="saveSystemPrompt()">Guardar Prompt</button>
+                    <button type="button" onclick="logoutPrompt()">Cerrar Sesión</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="qa-section">
+            <h2>Preguntas y Respuestas</h2>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Buscar preguntas...">
+            </div>
+            <form id="qaForm">
+                <div class="form-group">
+                    <label for="question">Pregunta:</label>
+                    <input type="text" id="question" required>
+                </div>
+                <div class="form-group">
+                    <label for="answer">Respuesta:</label>
+                    <textarea id="answer" rows="4" required></textarea>
+                    <div class="formatting-tools">
+                        <button type="button" onclick="formatText('answer', 'bold')">Negrita</button>
+                        <button type="button" onclick="formatText('answer', 'italic')">Cursiva</button>
+                        <button type="button" onclick="formatText('answer', 'newline')">Salto de línea</button>
+                    </div>
+                    <div class="help-text">
+                        <p>Puedes usar:</p>
+                        <ul>
+                            <li>**texto** para negrita</li>
+                            <li>*texto* para cursiva</li>
+                            <li>Presiona Enter para saltos de línea</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="submit">Agregar</button>
+                    <button type="button" id="cancelBtn" style="display: none;">Cancelar</button>
+                </div>
+            </form>
+            <div id="qaList"></div>
+        </section>
+    </div>
+    <script src="admin.js"></script>
+</body>
+</html> 

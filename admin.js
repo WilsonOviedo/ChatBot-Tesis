@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Cargar datos iniciales
     loadQAData();
+    loadPDFs();
     
     // Función para verificar la contraseña
     window.verifyPassword = function() {
@@ -25,6 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('promptAuth').style.display = 'none';
             document.getElementById('promptEditor').style.display = 'block';
             document.getElementById('adminPassword').value = '';
+            
+            // Asegurar que el textarea tenga el valor actual
+            document.getElementById('systemPrompt').value = qaData.systemPrompt;
         } else {
             alert('Contraseña incorrecta');
         }
@@ -35,6 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
         isAuthenticated = false;
         document.getElementById('promptAuth').style.display = 'block';
         document.getElementById('promptEditor').style.display = 'none';
+        
+        // Mantener el valor en el textarea pero deshabilitarlo
+        document.getElementById('systemPrompt').value = qaData.systemPrompt;
     };
     
     // Función para cargar los datos
@@ -44,10 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             qaData = data;
             
-            // Cargar el systemPrompt en el textarea solo si está autenticado
-            if (isAuthenticated) {
-                document.getElementById('systemPrompt').value = qaData.systemPrompt;
-            }
+            // Cargar el systemPrompt en el textarea siempre
+            document.getElementById('systemPrompt').value = qaData.systemPrompt;
             
             renderQAList();
         } catch (error) {
@@ -235,4 +240,120 @@ document.addEventListener('DOMContentLoaded', () => {
         editingId = null;
         document.getElementById('cancelBtn').style.display = 'none';
     });
+    
+    // Manejar el formulario de subida de PDFs
+    const pdfUploadForm = document.getElementById('pdfUploadForm');
+    pdfUploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData();
+        const fileInput = document.getElementById('pdfFile');
+        
+        if (fileInput.files.length === 0) {
+            alert('Por favor, seleccione un archivo PDF');
+            return;
+        }
+        
+        formData.append('pdf', fileInput.files[0]);
+        
+        try {
+            const response = await fetch('http://localhost:3000/api/upload-pdf', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                alert('PDF subido exitosamente');
+                pdfUploadForm.reset();
+                loadPDFs();
+            } else {
+                throw new Error('Error al subir');
+            }
+        } catch (error) {
+            console.error('Error al subir PDF:', error);
+            alert('Error al subir el PDF. Por favor, intente nuevamente.');
+        }
+    });
+
+    // Función para cargar PDFs
+    async function loadPDFs() {
+        try {
+            const response = await fetch('http://localhost:3000/api/pdfs');
+            const pdfFiles = await response.json();
+            renderPDFList(pdfFiles);
+        } catch (error) {
+            console.error('Error al cargar PDFs:', error);
+        }
+    }
+    
+    // Función para renderizar la lista de PDFs
+    function renderPDFList(pdfFiles) {
+        const pdfItems = document.getElementById('pdfItems');
+        pdfItems.innerHTML = '';
+        
+        if (pdfFiles.length === 0) {
+            pdfItems.innerHTML = '<p>No hay PDFs disponibles</p>';
+            return;
+        }
+        
+        pdfFiles.forEach(filename => {
+            const pdfElement = document.createElement('div');
+            pdfElement.className = 'pdf-item';
+            pdfElement.innerHTML = `
+                <div class="pdf-item-name">📄 ${filename}</div>
+                <div class="pdf-item-actions">
+                    <button class="download-btn" onclick="downloadPDF('${filename}')">Descargar</button>
+                    <button class="delete-btn" onclick="deletePDF('${filename}')">Eliminar</button>
+                </div>
+            `;
+            pdfItems.appendChild(pdfElement);
+        });
+    }
+    
+    // Función para descargar PDF
+    window.downloadPDF = function(filename) {
+        window.open(`http://localhost:3000/pdfs/${filename}`, '_blank');
+    };
+    
+    // Función para eliminar PDF
+    window.deletePDF = async function(filename) {
+        if (confirm(`¿Está seguro de que desea eliminar "${filename}"?`)) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/pdfs/${filename}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    alert('PDF eliminado exitosamente');
+                    loadPDFs();
+                } else {
+                    throw new Error('Error al eliminar');
+                }
+            } catch (error) {
+                console.error('Error al eliminar PDF:', error);
+                alert('Error al eliminar el PDF. Por favor, intente nuevamente.');
+            }
+        }
+    };
+    
+    // Función para insertar enlace de PDF
+    window.insertPdfLink = function(fieldId) {
+        const textarea = document.getElementById(fieldId);
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        
+        // Crear un modal simple para seleccionar el PDF
+        const pdfName = prompt('Ingrese el nombre del archivo PDF (ej: programa_informatica.pdf):');
+        if (pdfName) {
+            const linkText = prompt('Ingrese el texto del enlace (ej: Descargar Programa):', 'Descargar PDF');
+            if (linkText) {
+                const pdfLink = `[${linkText}](pdf:${pdfName})`;
+                textarea.value = text.substring(0, start) + pdfLink + text.substring(end);
+                textarea.focus();
+                textarea.setSelectionRange(start + pdfLink.length, start + pdfLink.length);
+            }
+        }
+    };
 }); 

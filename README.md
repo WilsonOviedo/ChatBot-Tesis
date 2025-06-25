@@ -41,6 +41,10 @@ ollama pull gemma:3b
 mkdir data
 ```
 
+2. Crear la carpeta `pdfs` para almacenar archivos PDF:
+```bash
+mkdir pdfs
+```
 
 ## Ejecución
 
@@ -60,6 +64,8 @@ node server.js
 ChatBot-Tesis/
 ├── data/
 │   └── qa.json           # Base de conocimiento del chatbot
+├── pdfs/                 # Archivos PDF para descarga
+│   └── README.md         # Documentación de PDFs
 ├── index.html            # Interfaz del chat
 ├── styles.css            # Estilos del chat
 ├── script.js             # Lógica del chat
@@ -79,16 +85,37 @@ ChatBot-Tesis/
 
 - Interfaz de chat intuitiva
 - Panel de administración para gestionar preguntas y respuestas
+- **Gestión de PDFs**: Subir, eliminar y gestionar archivos PDF
+- **Enlaces de descarga**: Insertar enlaces de PDF en las respuestas del bot
 - Formateo de texto (negrita, cursiva, saltos de línea)
 - Búsqueda de preguntas y respuestas
 - Autenticación para editar el prompt del sistema
 - Almacenamiento persistente de datos
+
+## Gestión de PDFs
+
+### Subir PDFs
+1. Accede al panel de administración
+2. Ve a la sección "Gestión de PDFs"
+3. Selecciona un archivo PDF y haz clic en "Subir PDF"
+
+### Insertar enlaces de PDF en respuestas
+1. Al editar una pregunta y respuesta, usa el botón "Insertar PDF"
+2. Ingresa el nombre del archivo PDF (ej: `programa_informatica.pdf`)
+3. Ingresa el texto del enlace (ej: "Descargar Programa")
+4. El enlace se insertará con el formato: `[Descargar Programa](pdf:programa_informatica.pdf)`
+
+### En el chat
+- Los usuarios verán botones rojos de descarga cuando el bot responda con enlaces de PDF
+- Los botones incluyen un ícono 📄 y el texto del enlace
+- Al hacer clic, se descargará automáticamente el archivo PDF
 
 ## Seguridad
 
 - El archivo `data/qa.json` contiene información sensible y no debe ser compartido
 - La interfaz de administración está protegida por contraseña
 - Se recomienda cambiar la contraseña por defecto (admin123)
+- Solo se permiten archivos PDF en la subida de archivos
 
 ## Solución de Problemas
 
@@ -105,6 +132,11 @@ ChatBot-Tesis/
    - Limpiar la caché del navegador
    - Verificar que el servidor esté corriendo
    - Comprobar la consola del navegador para errores
+
+4. Si los PDFs no se suben:
+   - Verificar que la carpeta `pdfs` exista
+   - Comprobar que el archivo sea un PDF válido
+   - Revisar los permisos de escritura en la carpeta
 
 ## Contribución
 

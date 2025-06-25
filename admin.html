@@ -61,6 +61,7 @@
                         <button type="button" onclick="formatText('answer', 'bold')">Negrita</button>
                         <button type="button" onclick="formatText('answer', 'italic')">Cursiva</button>
                         <button type="button" onclick="formatText('answer', 'newline')">Salto de línea</button>
+                        <button type="button" onclick="insertPdfLink('answer')">Insertar PDF</button>
                     </div>
                     <div class="help-text">
                         <p>Puedes usar:</p>
@@ -68,6 +69,7 @@
                             <li>**texto** para negrita</li>
                             <li>*texto* para cursiva</li>
                             <li>Presiona Enter para saltos de línea</li>
+                            <li>Usa "Insertar PDF" para agregar enlaces de descarga</li>
                         </ul>
                     </div>
                 </div>
@@ -77,6 +79,25 @@
                 </div>
             </form>
             <div id="qaList"></div>
+        </section>
+
+        <section class="pdf-section">
+            <h2>Gestión de PDFs</h2>
+            <div class="pdf-upload-container">
+                <form id="pdfUploadForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="pdfFile">Seleccionar PDF:</label>
+                        <input type="file" id="pdfFile" name="pdf" accept=".pdf" required>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit">Subir PDF</button>
+                    </div>
+                </form>
+            </div>
+            <div id="pdfList" class="pdf-list">
+                <h3>PDFs Disponibles</h3>
+                <div id="pdfItems"></div>
+            </div>
         </section>
     </div>
     <script src="admin.js"></script>

@@ -23,6 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Función para formatear el texto
     function formatText(text) {
+        // Primero manejar enlaces de PDF
+        text = text.replace(/\[([^\]]+)\]\(pdf:([^)]+)\)/g, 
+            '<a href="/pdfs/$2" download class="pdf-link">📄 $1</a>');
+        
+        // Luego aplicar el formateo normal
         return text
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')

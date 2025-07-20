@@ -126,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
             qaElement.innerHTML = `
                 <div class="qa-content">
                     <h3>${qa.question}</h3>
+                    <p><strong>Carrera:</strong> ${qa.carrera || 'General'}</p>
                     <p>${formatAnswer(qa.answer)}</p>
                 </div>
                 <div class="qa-actions">
@@ -151,6 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (qa) {
             document.getElementById('question').value = qa.question;
             document.getElementById('answer').value = qa.answer;
+            document.getElementById('carrera').value = qa.carrera || '';
             editingId = id;
             document.getElementById('cancelBtn').style.display = 'inline-block';
         }
@@ -196,12 +198,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const question = document.getElementById('question').value;
         const answer = document.getElementById('answer').value;
+        const carrera = document.getElementById('carrera').value;
         
         if (editingId !== null) {
             // Editar pregunta existente
             const index = qaData.examples.findIndex(qa => qa.id === editingId);
             if (index !== -1) {
-                qaData.examples[index] = { id: editingId, question, answer };
+                qaData.examples[index] = { id: editingId, question, answer, carrera };
             }
             editingId = null;
             document.getElementById('cancelBtn').style.display = 'none';
@@ -210,11 +213,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const newId = qaData.examples.length > 0 
                 ? Math.max(...qaData.examples.map(qa => qa.id)) + 1 
                 : 1;
-            qaData.examples.push({ id: newId, question, answer });
+            qaData.examples.push({ id: newId, question, answer, carrera });
         }
         
         await saveQAData();
         e.target.reset();
+        document.getElementById('carrera').value = '';
     });
     
     // Manejar la búsqueda

@@ -1,0 +1,10 @@
+{
+    "systemPrompt": "Test prompt",
+    "examples": [
+        {
+            "id": 1,
+            "question": "hola",
+            "answer": "test"
+        }
+    ]
+}

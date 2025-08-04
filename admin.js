@@ -12,10 +12,20 @@ document.addEventListener('DOMContentLoaded', () => {
     let editingId = null;
     let isAuthenticated = false;
     
+    const agentSelector = document.getElementById('agentSelector');
+    let agentFiles = [];
+    let currentAgentFile = '';
+
+    const similarityInput = document.getElementById('similarityThreshold');
+    const saveThresholdBtn = document.getElementById('saveThresholdBtn');
+
     // Cargar datos iniciales
-    loadQAData();
     loadPDFs();
+    loadAgentList();
     
+    // Cargar el umbral de similitud al iniciar
+    loadSimilarityThreshold();
+
     // Función para verificar la contraseña
     window.verifyPassword = function() {
         const password = document.getElementById('adminPassword').value;
@@ -46,8 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Función para cargar los datos
     async function loadQAData() {
+        if (!currentAgentFile) {
+            console.log('No hay agente seleccionado, saltando carga de datos');
+            return;
+        }
+        
         try {
-            const response = await fetch('http://localhost:3000/api/qa');
+            const response = await fetch(`http://localhost:3000/api/qa?agent=${currentAgentFile}`);
             const data = await response.json();
             qaData = data;
             
@@ -68,11 +83,19 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
+        if (!currentAgentFile) {
+            alert('No hay un agente seleccionado. Por favor, seleccione un agente primero.');
+            return;
+        }
+        
         try {
             const newPrompt = document.getElementById('systemPrompt').value;
             qaData.systemPrompt = newPrompt;
             
-            const response = await fetch('http://localhost:3000/api/qa', {
+            console.log('Enviando datos:', JSON.stringify(qaData));
+            console.log('URL:', `http://localhost:3000/api/qa-admin?agent=${currentAgentFile}`);
+            
+            const response = await fetch(`http://localhost:3000/api/qa-admin?agent=${currentAgentFile}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -80,10 +103,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(qaData)
             });
 
+            console.log('Respuesta del servidor:', response.status, response.statusText);
+            
             if (response.ok) {
+                const result = await response.json();
+                console.log('Respuesta exitosa:', result);
                 alert('Prompt del sistema guardado exitosamente');
             } else {
-                throw new Error('Error al guardar');
+                const errorText = await response.text();
+                console.error('Error del servidor:', errorText);
+                throw new Error(`Error al guardar: ${response.status} ${response.statusText}`);
             }
         } catch (error) {
             console.error('Error al guardar el prompt:', error);
@@ -94,19 +123,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para guardar los datos
     async function saveQAData() {
         try {
-            const response = await fetch('http://localhost:3000/api/qa', {
+            console.log('Guardando en:', `http://localhost:3000/api/qa-file?agent=${currentAgentFile}`);
+            console.log('Payload:', JSON.stringify(qaData));
+            const response = await fetch(`http://localhost:3000/api/qa-file?agent=${currentAgentFile}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(qaData)
             });
-
+            console.log('Respuesta del backend:', response.status, response.statusText);
             if (response.ok) {
                 const result = await response.json();
                 alert(result.message || 'Datos guardados exitosamente');
                 renderQAList();
             } else {
+                const errorText = await response.text();
+                console.error('Error al guardar:', errorText);
                 throw new Error('Error al guardar');
             }
         } catch (error) {
@@ -126,7 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
             qaElement.innerHTML = `
                 <div class="qa-content">
                     <h3>${qa.question}</h3>
-                    <p><strong>Carrera:</strong> ${qa.carrera || 'General'}</p>
                     <p>${formatAnswer(qa.answer)}</p>
                 </div>
                 <div class="qa-actions">
@@ -152,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (qa) {
             document.getElementById('question').value = qa.question;
             document.getElementById('answer').value = qa.answer;
-            document.getElementById('carrera').value = qa.carrera || '';
             editingId = id;
             document.getElementById('cancelBtn').style.display = 'inline-block';
         }
@@ -195,16 +226,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Manejar el envío del formulario
     qaForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
         const question = document.getElementById('question').value;
         const answer = document.getElementById('answer').value;
-        const carrera = document.getElementById('carrera').value;
-        
+        console.log('Submit: currentAgentFile =', currentAgentFile);
+        console.log('Antes de guardar, qaData:', JSON.stringify(qaData));
         if (editingId !== null) {
             // Editar pregunta existente
             const index = qaData.examples.findIndex(qa => qa.id === editingId);
             if (index !== -1) {
-                qaData.examples[index] = { id: editingId, question, answer, carrera };
+                qaData.examples[index] = { id: editingId, question, answer };
             }
             editingId = null;
             document.getElementById('cancelBtn').style.display = 'none';
@@ -213,12 +243,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const newId = qaData.examples.length > 0 
                 ? Math.max(...qaData.examples.map(qa => qa.id)) + 1 
                 : 1;
-            qaData.examples.push({ id: newId, question, answer, carrera });
+            qaData.examples.push({ id: newId, question, answer });
         }
-        
         await saveQAData();
         e.target.reset();
-        document.getElementById('carrera').value = '';
     });
     
     // Manejar la búsqueda
@@ -360,4 +388,75 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     };
+
+    function updateCurrentAgentLabel() {
+        const label = document.getElementById('currentAgentLabel');
+        if (!currentAgentFile) {
+            label.textContent = '';
+            return;
+        }
+        const pretty = currentAgentFile.replace('qa_', '').replace('.json', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        label.textContent = `Agente actual: ${pretty}`;
+    }
+
+    async function loadAgentList() {
+        try {
+            const response = await fetch('http://localhost:3000/api/agents');
+            agentFiles = await response.json();
+            agentSelector.innerHTML = '';
+            agentFiles.forEach(file => {
+                const option = document.createElement('option');
+                option.value = file;
+                option.textContent = file.replace('qa_', '').replace('.json', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                agentSelector.appendChild(option);
+            });
+            currentAgentFile = agentFiles[0];
+            updateCurrentAgentLabel();
+            // Cargar los datos después de inicializar currentAgentFile
+            await loadQAData();
+        } catch (error) {
+            console.error('Error al cargar la lista de agentes:', error);
+            alert('Error al cargar la lista de agentes.');
+        }
+    }
+
+    agentSelector.addEventListener('change', () => {
+        currentAgentFile = agentSelector.value;
+        updateCurrentAgentLabel();
+        loadQAData();
+    });
+
+    async function loadSimilarityThreshold() {
+        try {
+            const response = await fetch('http://localhost:3000/api/config');
+            const data = await response.json();
+            if (data.similarityThreshold !== undefined) {
+                similarityInput.value = Math.round(data.similarityThreshold * 100);
+            }
+        } catch (e) {
+            similarityInput.value = 60;
+        }
+    }
+
+    saveThresholdBtn.addEventListener('click', async () => {
+        const value = parseInt(similarityInput.value, 10);
+        if (isNaN(value) || value < 0 || value > 100) {
+            alert('El umbral debe ser un número entre 0 y 100');
+            return;
+        }
+        try {
+            const response = await fetch('http://localhost:3000/api/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ similarityThreshold: value / 100 })
+            });
+            if (response.ok) {
+                alert('Umbral de similitud actualizado');
+            } else {
+                alert('Error al guardar el umbral');
+            }
+        } catch (e) {
+            alert('Error al guardar el umbral');
+        }
+    });
 }); 

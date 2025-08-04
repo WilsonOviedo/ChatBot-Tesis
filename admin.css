@@ -339,4 +339,73 @@ button:hover {
 
 .pdf-item-actions .delete-btn:hover {
     background-color: #c82333;
+}
+
+.agent-selector-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #f5f5f5;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.agent-selector-bar label {
+    font-size: 1.1rem;
+    color: #333;
+}
+#agentSelector {
+    font-size: 1rem;
+    padding: 0.3rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #bbb;
+    background: #fff;
+    transition: border 0.2s;
+}
+#agentSelector:focus {
+    border: 1.5px solid #007bff;
+    outline: none;
+}
+.current-agent-label {
+    font-size: 1.1rem;
+    color: #007bff;
+    font-weight: bold;
+    margin-left: 1.5rem;
+    letter-spacing: 0.5px;
+}
+.similarity-threshold-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 2rem;
+    background: #eaf4ff;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+.similarity-threshold-bar label {
+    font-size: 1rem;
+    color: #333;
+}
+#similarityThreshold {
+    font-size: 1rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #bbb;
+    width: 60px;
+    text-align: right;
+}
+#saveThresholdBtn {
+    font-size: 0.95rem;
+    padding: 0.2rem 0.8rem;
+    border-radius: 4px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#saveThresholdBtn:hover {
+    background: #0056b3;
 } 

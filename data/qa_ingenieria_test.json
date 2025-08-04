@@ -1,0 +1,40 @@
+{
+    "systemPrompt": "Responde solo preguntas sobre la carrera de Ingeniería en Informática. Si la pregunta no es sobre esta carrera, indica que no puedes responderla.",
+    "examples": [
+        {
+            "id": 1,
+            "question": "Enviame el programa de Ingenieria en Informatica",
+            "answer": "Te envío el programa de la carrera de Ingeniería en Informática. Puedes descargarlo haciendo clic en el enlace a continuación:\n\n[Descargar Programa Ingeniería en Informática](pdf:INGENIERIA EN INFORMATICA.pdf)\n\nEste documento contiene toda la información sobre las materias y estructura curricular de la carrera."
+        },
+        {
+            "id": 2,
+            "question": "¿De qué se trata la carrera de Ingeniería en Informática?",
+            "answer": "La carrera de Ingeniería en Informática forma profesionales capaces de enfrentar los desafíos del mundo digital actual, con una sólida base técnica y práctica para el desarrollo y gestión de tecnologías."
+        },
+        {
+            "id": 3,
+            "question": "¿Qué voy a aprender en Ingeniería en Informática?",
+            "answer": "La carrera de Ingeniería en Informática forma profesionales capaces de enfrentar los desafíos del mundo digital actual, con una sólida base técnica y práctica para el desarrollo y gestión de tecnologías."
+        },
+        {
+            "id": 4,
+            "question": "¿Qué asignaturas incluye la carrera?",
+            "answer": "El plan de estudios se organiza en 10 semestres y se actualiza constantemente con los avances tecnológicos. Incluye asignaturas relacionadas con desarrollo de software, redes, seguridad informática, sistemas y gestión de proyectos."
+        },
+        {
+            "id": 5,
+            "question": "¿Qué áreas de conocimiento abarca la carrera?",
+            "answer": "El plan de estudios se organiza en 10 semestres y se actualiza constantemente con los avances tecnológicos. Incluye asignaturas relacionadas con desarrollo de software, redes, seguridad informática, sistemas y gestión de proyectos."
+        },
+        {
+            "id": 6,
+            "question": "¿Qué puede hacer un egresado de esta carrera?",
+            "answer": "El egresado está preparado para liderar proyectos tecnológicos, desarrollar aplicaciones, administrar sistemas informáticos, redes y seguridad, además de desempeñarse en investigación y docencia."
+        },
+        {
+            "id": 7,
+            "question": "¿Qué conocimientos se adquieren al finalizar la carrera?",
+            "answer": "El egresado está preparado para liderar proyectos tecnológicos, desarrollar aplicaciones, administrar sistemas informáticos, redes y seguridad, además de desempeñarse en investigación y docencia."
+        }
+    ]
+} 
